@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Fashion Store - Home{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h2>Welcome to Fashion Store! 👗</h2>
+    <p>Discover your unique style with our curated collection of clothing.</p>
+</div>
+
+{% if preferences.recent_views %}
+<div class="recent-section">
+    <h3>Recently Viewed Items</h3>
+    <div class="items-grid">
+        {% for item_id in preferences.recent_views %}
+            {% for clothing_item in clothing_items %}
+                {% if clothing_item.id == item_id %}
+                <div class="item-card">
+                    <img src="{{ clothing_item.image }}" alt="{{ clothing_item.name }}" onerror="this.src='/static/images/placeholder.jpg'">
+                    <h4>{{ clothing_item.name }}</h4>
+                    <p class="price">${{ clothing_item.price }}</p>
+                    <a href="{% url 'item_detail' clothing_item.id %}" class="btn">View Details</a>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="catalog-section">
+    <h3>Our Collection</h3>
+    <div class="items-grid">
+        {% for item in clothing_items %}
+        <div class="item-card">
+            <img src="{{ item.image }}" alt="{{ item.name }}" onerror="this.src='/static/images/placeholder.jpg'">
+            <div class="item-info">
+                <h4>{{ item.name }}</h4>
+                <p class="style-badge {{ item.style }}">{{ item.style|title }}</p>
+                <p class="description">{{ item.description }}</p>
+                <p class="price">${{ item.price }}</p>
+                <div class="sizes">
+                    {% for size in item.sizes %}
+                    <span class="size-tag">{{ size|upper }}</span>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'item_detail' item.id %}" class="btn">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

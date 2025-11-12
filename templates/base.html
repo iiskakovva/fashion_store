@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fashion Store{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="theme-{{ preferences.theme }}">
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>👗 Fashion Store</h1>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'preferences' %}">Preferences</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Fashion Store. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Fashion Store - Preferences{% endblock %}
+
+{% block content %}
+<div class="preferences-container">
+    <h2>Your Preferences</h2>
+    <p>Customize your shopping experience by setting your preferences below.</p>
+
+    <form method="post" class="preferences-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3>Favorite Styles</h3>
+            <div class="checkbox-group">
+                {% for choice in form.favorite_styles %}
+                <label class="checkbox-label">
+                    {{ choice.tag }} {{ choice.choice_label }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Preferred Sizes</h3>
+            <div class="checkbox-group">
+                {% for choice in form.preferred_sizes %}
+                <label class="checkbox-label">
+                    {{ choice.tag }} {{ choice.choice_label }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Theme</h3>
+            <div class="radio-group">
+                {% for choice in form.theme %}
+                <label class="radio-label">
+                    {{ choice.tag }} {{ choice.choice_label }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Language</h3>
+            <div class="radio-group">
+                {% for choice in form.language %}
+                <label class="radio-label">
+                    {{ choice.tag }} {{ choice.choice_label }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Preferences</button>
+    </form>
+</div>
+{% endblock %}

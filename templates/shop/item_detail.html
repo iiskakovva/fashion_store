@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Fashion Store - {{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="item-detail">
+    <div class="item-gallery">
+        <img src="{{ item.image }}" alt="{{ item.name }}" class="main-image" onerror="this.src='/static/images/placeholder.jpg'">
+    </div>
+    
+    <div class="item-info">
+        <h2>{{ item.name }}</h2>
+        <p class="style-badge {{ item.style }}">{{ item.style|title }}</p>
+        <p class="price">${{ item.price }}</p>
+        <p class="description">{{ item.description }}</p>
+        
+        <div class="sizes-section">
+            <h4>Available Sizes:</h4>
+            <div class="sizes">
+                {% for size in item.sizes %}
+                <span class="size-tag {% if size in preferences.preferred_sizes %}preferred{% endif %}">
+                    {{ size|upper }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary">Add to Cart</button>
+            <button class="btn btn-secondary">Add to Wishlist</button>
+        </div>
+    </div>
+</div>
+
+<div class="recommendations">
+    <h3>You might also like</h3>
+    <div class="items-grid">
+        {% for rec_item in clothing_items %}
+            {% if rec_item.style == item.style and rec_item.id != item.id %}
+            <div class="item-card">
+                <img src="{{ rec_item.image }}" alt="{{ rec_item.name }}" onerror="this.src='/static/images/placeholder.jpg'">
+                <h4>{{ rec_item.name }}</h4>
+                <p class="price">${{ rec_item.price }}</p>
+                <a href="{% url 'item_detail' rec_item.id %}" class="btn">View Details</a>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
