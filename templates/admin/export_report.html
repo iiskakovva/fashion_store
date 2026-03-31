@@ -1,0 +1,174 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .export-form {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .export-form h2 {
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #4f81bd;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #555;
+    }
+    
+    .form-group select, .form-group .field-checkbox {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .field-checkbox {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 4px;
+    }
+    
+    .field-checkbox div {
+        display: flex;
+        align-items: center;
+    }
+    
+    .field-checkbox input {
+        margin-right: 8px;
+    }
+    
+    .btn-export {
+        background: #4f81bd;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .btn-export:hover {
+        background: #3a6a9e;
+    }
+    
+    .info-box {
+        background: #e7f1ff;
+        border-left: 4px solid #4f81bd;
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 4px;
+    }
+    
+    .info-box p {
+        margin: 5px 0;
+        color: #333;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="export-form">
+    <h2>📊 Экспорт данных в Excel</h2>
+    
+    <div class="info-box">
+        <p><strong>Инструкция:</strong></p>
+        <p>1. Выберите таблицу для экспорта</p>
+        <p>2. Выберите поля, которые нужно включить в отчёт</p>
+        <p>3. Нажмите "Экспортировать" для скачивания файла Excel</p>
+    </div>
+    
+    <form method="post" id="exportForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="tableSelect">Выберите таблицу:</label>
+            <select name="table" id="tableSelect" required onchange="updateFields()">
+                <option value="">-- Выберите таблицу --</option>
+                {% for model in models %}
+                <option value="{{ model.name }}">{{ model.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Выберите поля для экспорта:</label>
+            <div id="fieldsContainer" class="field-checkbox">
+                <!-- Поля будут загружены динамически -->
+                <p>Сначала выберите таблицу</p>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn-export">📥 Экспортировать в Excel</button>
+    </form>
+</div>
+
+<script>
+// Данные о полях для каждой таблицы
+const modelsData = {
+    {% for model in models %}
+    "{{ model.name }}": {
+        fields: [
+            {% for field in model.fields %}
+            { name: "{{ field.name }}", label: "{{ field.label }}" },
+            {% endfor %}
+        ]
+    },
+    {% endfor %}
+};
+
+function updateFields() {
+    const tableSelect = document.getElementById('tableSelect');
+    const selectedTable = tableSelect.value;
+    const fieldsContainer = document.getElementById('fieldsContainer');
+    
+    if (!selectedTable || !modelsData[selectedTable]) {
+        fieldsContainer.innerHTML = '<p>Сначала выберите таблицу</p>';
+        return;
+    }
+    
+    const fields = modelsData[selectedTable].fields;
+    let html = '';
+    
+    fields.forEach(field => {
+        html += `
+            <div>
+                <input type="checkbox" name="fields" value="${field.name}" id="field_${field.name}">
+                <label for="field_${field.name}">${field.label}</label>
+            </div>
+        `;
+    });
+    
+    fieldsContainer.innerHTML = html;
+}
+
+// Автоматический выбор всех полей при клике на кнопку
+document.getElementById('exportForm').addEventListener('submit', function(e) {
+    const checkboxes = document.querySelectorAll('input[name="fields"]:checked');
+    if (checkboxes.length === 0) {
+        e.preventDefault();
+        alert('Пожалуйста, выберите хотя бы одно поле для экспорта');
+    }
+});
+</script>
+{% endblock %}
